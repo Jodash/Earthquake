@@ -1,16 +1,35 @@
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.android.earthquake;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.text.DecimalFormat;
+
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
@@ -43,6 +62,46 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     //Because will use split method at the position where the text "of" occurs
     private static final String LOCATION_SEPARATOR = "of";
 
+    private int getMagnitudeColor(double magnitude) {
+        int magnitudeColorResourceId;
+        //To present the magnitude in the closet integer less than the decimal value
+        int magnitudeFloor = (int)Math.floor(magnitude);
+        switch (magnitudeFloor){
+            case 0:
+            case 1:
+                magnitudeColorResourceId = R.color.magnitude1;
+                break;
+            case 2:
+                magnitudeColorResourceId = R.color.magnitude2;
+                break;
+            case 3:
+                magnitudeColorResourceId = R.color.magnitude3;
+                break;
+            case 4:
+                magnitudeColorResourceId = R.color.magnitude4;
+                break;
+            case 5:
+                magnitudeColorResourceId = R.color.magnitude5;
+                break;
+            case 6:
+                magnitudeColorResourceId = R.color.magnitude6;
+                break;
+            case 7:
+                magnitudeColorResourceId = R.color.magnitude7;
+                break;
+            case 8:
+                magnitudeColorResourceId = R.color.magnitude8;
+                break;
+            case 9:
+                magnitudeColorResourceId = R.color.magnitude9;
+                break;
+            default:magnitudeColorResourceId = R.color.magnitude10plus;
+                break;
+        }
+        return ContextCompat.getColor(getContext(),magnitudeColorResourceId);
+    }
+
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //Check if there is an existing list item view (ie. convertView) that we can reuse,
@@ -56,12 +115,24 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         //Find the earthquake at the given position in the list of earthquakes
         Earthquake currentEarthquake = getItem(position);
 
+
         //Find the TextView with view ID magnitude
         TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
         //Format the magnitude to show 1 decimal place
         String formattedMagnitude = formatMagnitude(currentEarthquake.getMagnitude());
         //Display the magnitude of the current earthquake in that TextView
         magnitudeView.setText(formattedMagnitude);
+
+        //Set the proper background color on the magnitude circle
+        //Fetch the background from the TextView
+        GradientDrawable magnitudeCircle = (GradientDrawable)magnitudeView.getBackground();
+
+        //Get the appropriate background color based on the current earthquake magnitude
+        int magnitudeColor = getMagnitudeColor(currentEarthquake.getMagnitude());
+
+        //Set the color on the magnitude circle
+        magnitudeCircle.setColor(magnitudeColor);
+
 
 
         //Get the original location String from the Earthquake Object
